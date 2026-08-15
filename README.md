@@ -42,7 +42,7 @@ All of the above is orchestrated by one Airflow DAG: `dags/apparel_pipeline_dag.
 ## Why this design
 
 **Generator → batch, not streaming.** The original script (`generator/` is
-adapted from it — see `data_generator.py` you supplied) ran four infinite
+adapted from it — see `data_generator.py` ) ran four infinite
 loops inside a Spark cluster, writing to Delta every `BATCH_INTERVAL_S`
 seconds. Airflow tasks are meant to run, finish, and exit — not loop forever —
 so each `generate_*_stream` became a `generate_*_batch()` function that
