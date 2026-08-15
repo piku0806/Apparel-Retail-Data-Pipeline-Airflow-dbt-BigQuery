@@ -1,0 +1,91 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: Cleaned pass-through of the customer CDC log (still one row per update, not yet deduped).
+    columns:
+      - name: customer_id
+        description: Business key. NOT unique here on purpose (raw log carries every CDC update).
+        tests:
+          - not_null
+      - name: name
+        tests:
+          - not_null
+      - name: gender
+        tests:
+          - accepted_values:
+              values: ["Male", "Female", "Other"]
+      - name: last_update_time
+        tests:
+          - not_null
+
+  - name: stg_products
+    description: Cleaned pass-through of the product CDC log.
+    columns:
+      - name: product_id
+        tests:
+          - not_null
+      - name: price
+        tests:
+          - not_null
+          # Known bad data can exist (has_invalid_price flag); warn instead
+          # of failing the whole pipeline run.
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              config:
+                severity: warn
+      - name: last_update_time
+        tests:
+          - not_null
+
+  - name: stg_stores
+    description: Cleaned pass-through of the store CDC log.
+    columns:
+      - name: store_id
+        tests:
+          - not_null
+      - name: status
+        tests:
+          - accepted_values:
+              values: ["Open", "Under Renovation"]
+      - name: last_update_time
+        tests:
+          - not_null
+
+  - name: stg_sales
+    description: Cleaned sales transactions (one row per transaction_id, no CDC).
+    columns:
+      - name: transaction_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_products')
+              field: product_id
+      - name: store_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_stores')
+              field: store_id
+      - name: event_time
+        tests:
+          - not_null
+      - name: quantity
+        description: Can legitimately be negative (a return) - see is_return flag. Not tested as an error.
+      - name: discount_applied
+        description: Should never be negative - flagged via has_invalid_discount, warned on here rather than failing the run.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              config:
+                severity: warn

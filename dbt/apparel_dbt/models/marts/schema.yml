@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: SCD Type 1 customer dimension - one current row per customer_id.
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: name
+        tests:
+          - not_null
+
+  - name: dim_products
+    description: SCD Type 1 product dimension - one current row per product_id.
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_stores
+    description: SCD Type 1 store dimension - one current row per store_id.
+    columns:
+      - name: store_id
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_sales
+    description: One row per sales transaction, enriched and flagged for known data-quality issues.
+    columns:
+      - name: transaction_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+      - name: store_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_stores')
+              field: store_id
+      - name: event_time
+        tests:
+          - not_null

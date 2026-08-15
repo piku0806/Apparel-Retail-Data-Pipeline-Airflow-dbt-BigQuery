@@ -1,0 +1,33 @@
+version: 2
+
+sources:
+  - name: apparel_raw
+    database: "{{ target.project }}"
+    schema: apparel_raw   # matches BQ_DATASET_RAW in generator/config.py
+    description: >
+      Append-only raw landing tables loaded by the Airflow DAG from generator
+      CSV batches. Each load is a straight append (WRITE_APPEND), so these
+      tables contain the full history of every batch ever generated,
+      including multiple rows per business key for dimension entities
+      (that's the CDC log the staging models resolve).
+    tables:
+      - name: customers_raw
+        description: Raw customer batches (bootstrap + CDC-style updates).
+        columns:
+          - name: customer_id
+            description: Natural/business key for a customer.
+      - name: products_raw
+        description: Raw product batches (bootstrap + CDC-style updates).
+        columns:
+          - name: product_id
+            description: Natural/business key for a product.
+      - name: stores_raw
+        description: Raw store batches (bootstrap + CDC-style updates).
+        columns:
+          - name: store_id
+            description: Natural/business key for a store.
+      - name: sales_raw
+        description: Raw sales transactions (append-only fact stream).
+        columns:
+          - name: transaction_id
+            description: Natural/business key for a sales transaction.

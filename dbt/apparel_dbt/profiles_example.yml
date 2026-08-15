@@ -1,0 +1,23 @@
+# Example dbt profile for this project.
+#
+# dbt looks for profiles.yml in $DBT_PROFILES_DIR (the Airflow DAG sets this to
+# the dbt project directory itself, /opt/airflow/dbt/apparel_dbt). Copy this
+# file to `profiles.yml` in the same directory (or to ~/.dbt/profiles.yml) and
+# fill in your own GCP project + service account key path.
+#
+# Do NOT commit a real profiles.yml with real credentials to version control.
+
+apparel_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: your-gcp-project
+      dataset: apparel_analytics       # marts land here (staging uses apparel_analytics_staging)
+      keyfile: /opt/airflow/keys/bq_service_account.json
+      location: US
+      threads: 4
+      timeout_seconds: 300
+      job_execution_timeout_seconds: 300
+      job_retries: 1

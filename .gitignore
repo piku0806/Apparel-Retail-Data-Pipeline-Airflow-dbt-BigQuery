@@ -1,0 +1,19 @@
+# Secrets - never commit
+keys/*.json
+.env
+dbt/apparel_dbt/profiles.yml
+
+# Generated data / local state
+data/raw/**/*.csv
+data/state/*.json
+
+# dbt
+dbt/apparel_dbt/target/
+dbt/apparel_dbt/dbt_packages/
+dbt/apparel_dbt/logs/
+
+# Airflow
+logs/
+__pycache__/
+*.pyc
+.DS_Store
