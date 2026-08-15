@@ -162,18 +162,3 @@ Without any GCP credentials configured, the generator still runs standalone
 (it falls back to a local JSON cache in `data/state/` for ID lookups) — handy
 for a quick sanity check of the generation logic before wiring up BigQuery.
 
-## Extending this project
-
-- **Swap the local CSV landing zone for GCS**: point `generator/config.py` at
-  a `gs://` bucket and use `GCSToBigQueryOperator` instead of the local-file
-  `load_to_bigquery.py` script — more representative of a production landing
-  zone.
-- **Add `astronomer-cosmos`** to turn each dbt model into its own Airflow
-  task (instead of one `BashOperator` per `dbt run`/`dbt test` invocation),
-  for finer-grained retries and lineage in the Airflow UI.
-- **Add Great Expectations or Soda** as an explicit data-quality gate between
-  the raw load and the dbt run, instead of relying solely on dbt tests.
-- **Surrogate keys**: the marts currently reuse the generator's natural
-  integer IDs directly. If you want to mirror the Databricks project's
-  surrogate-key pattern exactly, add `dbt_utils.generate_surrogate_key` in
-  each dimension model and a matching lookup join in `fct_sales`.
