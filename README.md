@@ -5,13 +5,10 @@ customers, products, stores) is generated in batches, loaded into BigQuery,
 and transformed into a dimensional model using **Apache Airflow** for
 orchestration and **dbt** for SQL transformation.
 
-The project is a re-implementation of an existing Databricks Delta Live
-Tables pipeline on a different technology stack. It uses the same source
-data generator and the same data-quality characteristics, applying the same
-data engineering problem set — CDC-based dimension upserts, referential
-integrity enforcement, and dirty-data handling — to a different, widely used
-toolchain: Airflow and dbt on a cloud data warehouse, rather than Databricks
-DLT and Delta Lake.
+It uses the source data generator and data-quality characteristics, applying
+data engineering problem set like CDC-based dimension upserts, referential
+integrity enforcement, and dirty-data handling to a different, widely used
+toolchain: Airflow and dbt on a cloud data warehouse(BigQuery)
 
 ## Architecture
 
